@@ -1,0 +1,825 @@
+\documentclass[11pt]{article}
+\usepackage{float}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsfonts,mathtools}
+\usepackage{bm}
+\usepackage{booktabs,array,longtable,tabularx,multirow,rotating}
+\usepackage{graphicx,epstopdf}
+\graphicspath{{../pdf/}{../jpeg/}}
+\DeclareGraphicsExtensions{.pdf,.jpeg,.png,.eps}
+\usepackage{tikz}
+\usetikzlibrary{shapes,fit,positioning,arrows}
+\usepackage[font=small,skip=2pt]{caption}
+\captionsetup{skip=0pt,justification=centering}
+\usepackage{subcaption}
+\usepackage{xcolor,soul,framed}
+\colorlet{shadecolor}{yellow}
+\sethlcolor{yellow}
+\usepackage{siunitx}
+\usepackage{textcomp,gensymb}
+\usepackage[noadjust]{cite}
+\usepackage{enumitem}
+\usepackage{footnote}
+\usepackage{comment}
+\usepackage{url}
+\def\UrlBreaks{\do\/\do-}
+\usepackage{titlesec}
+\usepackage{hyperref}
+
+\interdisplaylinepenalty=2500
+
+\begin{document}
+
+\begin{center}
+\Large\textbf{Shiv Nadar University Chennai}\\[2mm]
+\end{center}
+
+\renewcommand{\arraystretch}{1.4}
+
+\begin{tabular}{|p{3.5cm}|p{8cm}|p{2cm}|}
+\hline
+Degree \& Branch & B.Tech Artificial Intelligence \& Data Science & Semester V\\ \hline
+Subject Code \& Name & CS3807 -- Deep Learning Laboratory & AY: 2026--27\\ \hline
+\end{tabular}
+
+\vspace{3mm}
+
+\begin{center}
+\Large\textbf{Experiment 1}\\
+\large\textbf{Implementation of a Single Layer Perceptron for Binary Classification}
+\end{center}
+
+%----------------------------------------------------------
+
+\section*{1. Objective}
+
+The objective of this experiment is to understand the concept of an artificial neuron and implement a Single Layer Perceptron from scratch for binary classification. Students will learn the perceptron learning algorithm, understand the importance of activation functions, visualize the learning process, and evaluate the classifier using a real-world dataset.
+
+%----------------------------------------------------------
+
+%----------------------------------------------------------
+
+\section*{2. Background Theory}
+
+An Artificial Neuron is the fundamental building block of a neural network. It receives one or more input features, multiplies them by corresponding weights, adds a bias term, and applies an activation function to determine the output.The Single Layer Perceptron is the earliest supervised learning algorithm capable of solving linearly separable binary classification problems.
+
+\subsection*{Mathematical Formulation}
+
+Weighted Sum
+
+\[
+z=\mathbf{w}^{T}\mathbf{x}+b
+\]
+
+where
+
+\begin{itemize}
+\item $\mathbf{x}$ : Input vector
+\item $\mathbf{w}$ : Weight vector
+\item $b$ : Bias
+\item $z$ : Linear combination
+\end{itemize}
+
+Prediction
+
+\[
+\hat y=f(z)
+\]
+
+Weight Update Rule
+
+\[
+\mathbf{w}_{new}
+=
+\mathbf{w}_{old}
++
+\eta
+(y-\hat y)
+\mathbf{x}
+\]
+
+Bias Update
+
+\[
+b_{new}
+=
+b_{old}
++
+\eta
+(y-\hat y)
+\]
+
+where $\eta$ denotes the learning rate.
+
+%----------------------------------------------------------
+
+\section*{3. Activation Functions}
+
+An activation function determines the output of a neuron based on the weighted sum of its inputs. It introduces non-linearity, enabling neural networks to learn complex patterns. Although the perceptron uses only the Step Activation Function, modern deep learning models employ differentiable activation functions for efficient optimization through backpropagation.
+
+\subsection*{Step Activation Function}
+
+\[
+f(z)=
+\begin{cases}
+1,&z\ge0\\
+0,&z<0
+\end{cases}
+\]
+
+The Step Activation Function produces a binary output and is therefore suitable only for linearly separable binary classification problems.
+
+\begin{center}
+\begin{tabular}{|p{2.5cm}|p{3cm}|p{6cm}|}
+\hline
+\textbf{Activation} & \textbf{Output Range} & \textbf{Typical Applications}\\
+\hline
+Step & $\{0,1\}$ & Classical Perceptron\\
+\hline
+Sigmoid & $(0,1)$ & Binary Classification Output Layer\\
+\hline
+Tanh & $(-1,1)$ & Hidden Layers (Traditional Networks)\\
+\hline
+ReLU & $[0,\infty)$ & Hidden Layers in CNNs and MLPs\\
+\hline
+Leaky ReLU & $(-\infty,\infty)$ & Avoiding Dying ReLU\\
+\hline
+Softmax & $(0,1)$ & Multi-class Classification Output Layer\\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Note:} This experiment uses only the Step Activation Function. The remaining activation functions will be studied in subsequent experiments involving Multilayer Perceptrons and Deep Neural Networks.
+
+%----------------------------------------------------------
+
+\section*{4. Dataset Description}
+
+\textbf{Dataset:} Banknote Authentication Dataset
+\textbf{Source:} UCI Machine Learning Repository
+\textbf{Download Link:}
+\url{https://archive.ics.uci.edu/dataset/267/banknote+authentication}
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+Instances & 1372\\
+\hline
+Features & 4 Numerical Features\\
+\hline
+Classes & 2\\
+\hline
+Missing Values & None\\
+\hline
+Task & Binary Classification\\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Feature Description}
+
+
+\begin{itemize}
+\item Variance
+\item Skewness
+\item Curtosis
+\item Entropy
+\end{itemize}
+
+Target Class
+
+\begin{itemize}
+\item 0 -- Authentic Banknote
+\item 1 -- Forged Banknote
+\end{itemize}
+
+%----------------------------------------------------------
+
+\section*{6. Experimental Procedure}
+
+\textbf{Task 1: Dataset Exploration}
+
+\begin{itemize}
+\item Load the dataset.
+\item Display the first five samples.
+\item Determine dataset dimensions.
+\item Identify missing values.
+\item Display descriptive statistics.
+\end{itemize}
+
+\textbf{Expected Output}
+
+Dataset summary and statistical information.
+
+\vspace{2mm}
+
+\textbf{Task 2: Exploratory Data Analysis}
+
+Generate
+
+\begin{itemize}
+\item Histograms
+\item Correlation Heatmap
+\item Scatter Plot
+\item Boxplots
+\end{itemize}
+
+\vspace{2mm}
+
+\textbf{Task 3: Data Preprocessing}
+
+\begin{itemize}
+\item Normalize all numerical features.
+\item Split the dataset into Training (80\%) and Testing (20\%).
+\end{itemize}
+
+\vspace{2mm}
+
+\textbf{Task 4: Perceptron Implementation}
+
+Implement from scratch
+
+\begin{itemize}
+\item Weight Initialization
+\item Bias Initialization
+\item Step Activation Function
+\item Forward Propagation
+\item Perceptron Learning Rule
+\end{itemize}
+
+\vspace{2mm}
+
+\textbf{Task 5: Model Training}
+
+Display
+
+\begin{itemize}
+\item Epoch Number
+\item Misclassified Samples
+\item Updated Weights
+\item Updated Bias
+\end{itemize}
+
+\vspace{2mm}
+
+\textbf{Task 6: Model Evaluation}
+
+Compute
+
+\begin{itemize}
+\item Accuracy
+\item Precision
+\item Recall
+\item F1-score
+\item Confusion Matrix
+\end{itemize}
+
+%----------------------------------------------------------
+
+\section*{Source Code}
+
+\url{https://colab.research.google.com/drive/1PCnzByIxlNJ_Lig3zXdE7kVYDm61d1dd?usp=sharing}
+\url{https://github.com/likithainnamuri7/Likitha-Innamuri}
+
+%----------------------------------------------------------
+
+\section*{11. Experimental Results}
+
+\textbf{Task 1: Dataset Exploration}
+
+\begin{itemize}
+\item Dataset Size: $1372 \times 5$
+\item Number of Features: 4
+\item Number of Classes: 2
+\item Missing Values: 0
+\item Dataset was complete and required no data cleaning.
+\end{itemize}
+
+\vspace{2mm}
+
+\textbf{Task 2: Exploratory Data Analysis (EDA)}
+
+\begin{itemize}
+\item Feature distributions are non-uniform.
+\item Variance is the most discriminative feature.
+\item Scatter plot shows good separation between classes.
+\item Few outliers are present but do not significantly affect classification.
+\end{itemize}
+
+\vspace{2mm}
+
+\textbf{Task 3: Data Preprocessing}
+
+\begin{itemize}
+\item Training Samples: 1097
+\item Testing Samples: 275
+\item Training Feature Shape: $(1097, 4)$
+\item Testing Feature Shape: $(275, 4)$
+\item All features were successfully normalized before training.
+\end{itemize}
+
+\vspace{2mm}
+
+\textbf{Task 4: Perceptron Implementation}
+
+\begin{itemize}
+\item Learning Rate: 0.01
+\item Epochs: 100
+\item Initial Misclassified Samples: 47
+\item Final Misclassified Samples: 12
+\item Final Bias: $-0.13$
+\end{itemize}
+
+\vspace{2mm}
+
+\textbf{Task 5: Model Training}
+
+\begin{itemize}
+\item Training error reduced from 47 to 12 misclassified samples.
+\item Model parameters converged after several epochs.
+\item Weight values stabilized during training.
+\item Bias converged to approximately $-0.13$.
+\item Decision boundary successfully separated most training samples.
+\item Different learning rates produced similar classification performance.
+\end{itemize}
+
+\vspace{2mm}
+
+\textbf{Task 6: Model Evaluation}
+
+\begin{center}
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Metric} & \textbf{Value}\\
+\hline
+Accuracy & 98.55\%\\
+\hline
+Precision & 98.43\%\\
+\hline
+Recall & 98.43\%\\
+\hline
+F1-score & 98.43\%\\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{3mm}
+
+\textbf{Confusion Matrix}
+
+\begin{center}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Actual / Predicted} & \textbf{Class 0} & \textbf{Class 1}\\
+\hline
+Class 0 & 146 & 2\\
+\hline
+Class 1 & 2 & 125\\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Generated Plots with Interpretation}
+
+\noindent\textbf{1. Feature Histograms}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{histogram.png}
+\end{figure}
+
+\noindent
+Histograms show that the features that are having different distributions and they are not normally distributed.Curtosis contains the few extreme values,while the class distribution is nearly balanced between the two categories.
+\vspace{0.6cm}
+
+%-------------------------------------------------------------
+
+\noindent\textbf{2. Correlation Heatmap}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\textwidth]{heatmap.png}
+\end{figure}
+
+\noindent
+Heatmap indicates that the variance has the strongest correlation with the target class,making it the most influential features.Strong correlation is also observed between skewness and curtosis
+
+\vspace{0.6cm}
+
+%-------------------------------------------------------------
+
+\noindent\textbf{3. Scatter Plot}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{scatter.png}
+\end{figure}
+
+\noindent
+
+The scatterplot shows that the two classes that are the well seperated with only slight overlap.This indicates that the datasets are approximately separable and suitable for the perceptron classification.
+
+\vspace{0.6cm}
+
+%-------------------------------------------------------------
+
+\noindent\textbf{4. Boxplots}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{boxplot.png}
+\end{figure}
+
+\noindent
+The boxplots indicates curtosis has several outliers,whereas the remaining features have comparatively less extreme values.These outliers are present as they represent valid observations.
+
+\vspace{0.6cm}
+
+%-------------------------------------------------------------
+
+\noindent\textbf{5. Training Error vs Epoch}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{training_error.png}
+\end{figure}
+
+\noindent
+The number of misclassified samples decreases as the epochs increase, showing that the perceptron learns effectively during training. The training error stabilizes after many epochs, indicating convergence.The number of the misclassified samples decreases as the epochs increases,it shows that perceptron learnt effectively during training process.The training error stabilizes after several epochs,that indicates covergence.
+
+\vspace{0.6cm}
+
+%-------------------------------------------------------------
+
+\noindent\textbf{6. Weight Evolution}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{weight_evolution.png}
+\end{figure}
+
+\noindent
+The weight values changes rapidly during the intial epochs and gradually after intial epochs stabilizes as training progresses.This indicates that the perceptron learns the optimal feature weights successfully.
+\vspace{0.6cm}
+
+%-------------------------------------------------------------
+
+\noindent\textbf{7. Bias Evolution}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{bias_evolution.png}
+\end{figure}
+
+\noindent
+The bias gradually decreases during the training process and becomes stable near the final epochs.This suggests that the perceptron has converged to a stable decision boundary.
+\vspace{0.6cm}
+
+%-------------------------------------------------------------
+
+\noindent\textbf{8. Confusion Matrix}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{confusion_matrix.png}
+\end{figure}
+
+\noindent
+The confusion matrix shows that only 4 out of the 275 test samples were misclassified.The model acheived an accuracy of 98.55\%,demonstrating excellent classification performance.
+\vspace{0.6cm}
+
+%-------------------------------------------------------------
+
+\noindent\textbf{9. Learning Rate Comparison}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{learning_rate.png}
+\end{figure}
+
+\noindent
+The learning rate comparison shows that different learning rates exhibits similar convergence behaviour on the dataset.The final classification performance remains nearly identical because that the dataset is almost linearly seperable.
+\vspace{0.6cm}
+
+%-------------------------------------------------------------
+
+\noindent\textbf{10. Decision Boundary}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{decision_boundary.png}
+\end{figure}
+
+\noindent
+The decision boundary mostly seperates the most of the samples into their respective classes with few less overlap.This confirms that the single layer perceptron learned an effective linear classifier for the selected features.
+%----------------------------------------------------------
+
+\section*{8. Performance Tables}
+
+\textbf{Training Summary}
+
+\renewcommand{\arraystretch}{1.4}
+
+\begin{tabular}{|p{6cm}|p{7cm}|}
+\hline
+\textbf{Parameter} & \textbf{Value}\\
+\hline
+Dataset Size & 1372 Samples (1372 $\times$ 5)\\
+\hline
+Train/Test Split & 80\% Training (1097 samples), 20\% Testing (275 samples)\\
+\hline
+Learning Rate & 0.01\\
+\hline
+Epochs & 100\\
+\hline
+Final Weights &
+[-0.2427,\; -0.2703,\; -0.2484,\; 0.0056]\\
+\hline
+Final Bias & -0.13\\
+\hline
+Accuracy & 98.55\%\\
+\hline
+Precision & 98.43\%\\
+\hline
+Recall & 98.43\%\\
+\hline
+F1-score & 98.43\%\\
+\hline
+\end{tabular}
+
+\vspace{5mm}
+
+\textbf{Epoch-wise Learning}
+
+\renewcommand{\arraystretch}{1.3}
+
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{Epoch} & \textbf{Errors} & \textbf{Weight 1} & \textbf{Weight 2} & \textbf{Bias}\\
+\hline
+1   & 47 & -0.0725 & -0.0649 & -0.03\\
+\hline
+20  & 17 & -0.1564 & -0.1747 & -0.09\\
+\hline
+40  & 19 & -0.1903 & -0.2030 & -0.10\\
+\hline
+60  & 16 & -0.2117 & -0.2390 & -0.11\\
+\hline
+80  & 16 & -0.2365 & -0.2637 & -0.12\\
+\hline
+100 & 12 & -0.2427 & -0.2703 & -0.13\\
+\hline
+\end{tabular}
+
+%----------------------------------------------------------
+
+\section*{9. Additional Tasks}
+
+\begin{enumerate}[leftmargin=*]
+
+\item \textbf{Comparison of Step and Sigmoid Activation Functions}
+
+Step activation function produces only binary outputs(0 or 1) and it is non differentiable,making it not suitable for the gradient based optimisation.Whereas Sigmoid activation function produces continuous outputs between 0 and 1 and it is differentiable,allowing efficient backpropagation.So,modern deeplearning models prefer sigmoid activation function or other differentiable activation functions than the sigmoid function.
+
+
+\vspace{3mm}
+
+\item \textbf{Comparison with Scikit-learn's Perceptron}
+
+
+The perceptron implemented from scratch successfully classified the Banknote Authentication dataset with an accuracy of \textbf{98.55\%}. Scikit-learn's \texttt{Perceptron} provides similar accuracy while offering optimized implementations, automatic parameter tuning, early stopping, and faster convergence. However, implementing the algorithm from scratch provides a better understanding of the perceptron learning process.
+
+\vspace{3mm}
+
+\item \textbf{Learning Rate Comparison}
+
+This experiment was repeated using learning rates \textbf{0.001},\textbf{0.01},and \textbf{0.1}.All the three learning rates produced similar classification accuracy because the
+dataset is nearly linearly seperable.The primary difference is the magnitude of weight updates and convergence behaviour during the training.
+
+\vspace{3mm}
+
+\item \textbf{Why a Single Layer Perceptron Cannot Solve the XOR Problem}
+
+The XOR problem is not linearly seperable ,meaning that the single straight decision boundary cannot correctly classify the all inputs.Since a single layer perceptron can only learn the linear decision boundaries,it could not able to solve the XOR problem.Multilayer neural network with hidden layers are required to learn the non-linear relationships.
+
+\vspace{3mm}
+
+\item \textbf{Effect of Feature Normalization on Model Convergence}
+
+Feature normalization scales all the input features into a comparable range,preventing features with the larger numerical values from dominating the learning.In this experiment,normalization resulted in smoother weight updation,faster convergence,and improved the classification performances,which enables the perceptron to achieve an accuracy of \textbf{98.55\%}
+
+\subsection{Implementation of Perceptron Learning Algorithm}
+
+\textbf{Question:}
+
+Code the perceptron learning algorithm for OR, NOT, AND, and XOR gates using Python. Show the weights after each update. Plot the decision boundary after each weight update using Python built in packages. Analyze the learning behavior for each logic gate. (K4)
+
+\vspace{0.6cm}
+
+%-------------------------------------------------------------
+
+\noindent\textbf{1. OR Gate - Update 1}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{OR1.png}
+\end{figure}
+
+\noindent
+The initial decision boundary does not correctly separate the OR gate outputs since the perceptron has only completed its first update. Most samples are still misclassified because the weights are close to their initial values. This stage represents the beginning of the learning process before the model identifies the correct linear boundary.
+
+\vspace{0.6cm}
+
+%-------------------------------------------------------------
+
+\noindent\textbf{2. OR Gate - Update 3}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{OR3.png}
+\end{figure}
+
+\noindent
+The decision boundary shifts noticeably after successive weight updates, reducing the number of misclassified samples. With weights approximately equal to $[0,1]$ and a bias of $-1$, the perceptron correctly classifies most of the training points. This indicates that the model is steadily learning the OR gate pattern.
+
+\vspace{0.6cm}
+
+%-------------------------------------------------------------
+
+\noindent\textbf{3. OR Gate - Final Update}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{OR5.png}
+\end{figure}
+
+\noindent
+The final decision boundary perfectly separates the negative sample from the positive samples. The perceptron converges with the weights close to $[1,1]$ and a bias of $-1$, resulting in the correct classification of all four input combinations. This confirms that the OR gate is linearly separable.
+
+\vspace{0.8cm}
+
+%-------------------------------------------------------------
+
+\noindent\textbf{4. NOT Gate - Final Decision Boundary}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{not_gate.png}
+\end{figure}
+
+\noindent
+The figure shows a clear threshold separating the two possible input values of the NOT gate. Since only one feature is involved, the perceptron quickly learns the correct decision boundary with minimal weight updates. Both inputs are classified correctly, demonstrating successful convergence.
+
+\vspace{0.8cm}
+
+%-------------------------------------------------------------
+
+\noindent\textbf{5. AND Gate - Update 1}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{AND1.png}
+\end{figure}
+
+\noindent
+During the first iteration, the decision boundary is unable to isolate the positive sample $(1,1)$ from the remaining negative samples. The perceptron has only begun adjusting its weights and bias, resulting in several incorrect classifications. Further learning is required before convergence can be achieved.
+
+\vspace{0.6cm}
+
+%-------------------------------------------------------------
+
+\noindent\textbf{6. AND Gate - Update 3}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{AND3.png}
+\end{figure}
+
+\noindent
+After several updates, the decision boundary moves closer to the desired position and classification accuracy improves. The updated weights and bias reduce the number of misclassified samples, showing that the perceptron is gradually learning the AND gate. However, the model has not yet reached its optimal solution.
+
+\vspace{0.6cm}
+
+%-------------------------------------------------------------
+
+\noindent\textbf{7. AND Gate - Update 6}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{AND6.png}
+\end{figure}
+
+\noindent
+The decision boundary becomes more stable after additional training iterations and correctly separates most of the input combinations. Only minor adjustments remain before convergence is achieved. This demonstrates the gradual improvement of the perceptron through iterative weight updates.
+
+\vspace{0.6cm}
+
+%-------------------------------------------------------------
+
+\noindent\textbf{8. AND Gate - Final Update}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{AND11.png}
+\end{figure}
+
+\noindent
+The perceptron successfully converges with final weights approximately equal to $[2,1]$ and a bias of $-3$. The learned decision boundary correctly isolates the only positive sample $(1,1)$ while classifying all remaining inputs as negative. This confirms successful learning of the AND gate.
+
+\vspace{0.8cm}
+
+%-------------------------------------------------------------
+
+\noindent\textbf{9. XOR Gate - Update 1}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{xor1.png}
+\end{figure}
+
+\noindent
+The first update produces only a slight change in the decision boundary because the weights remain close to their initial values. Several XOR samples are still incorrectly classified, indicating that the perceptron does not yet identified a suitable separating line. This is expected during the initial stage of training.
+
+\vspace{0.6cm}
+
+%-------------------------------------------------------------
+
+\noindent\textbf{10. XOR Gate - Update 5}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{xor5.png}
+\end{figure}
+
+\noindent
+The decision boundary shifts after the multiple weight updates and correctly classifies some of the training samples. Although the weights become approximately $[0,1]$ with a bias of $1$, at least one XOR input remains misclassified. This shows that a single linear boundary is insufficient for solving the XOR problem.
+
+\vspace{0.6cm}
+
+%-------------------------------------------------------------
+
+\noindent\textbf{11. XOR Gate - Update 15}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{xor15.png}
+\end{figure}
+
+\noindent
+The decision boundary continues changing position, but instead of improving consistently, it starts revisiting earlier configurations. The weights become approximately $[-1,0]$ with a bias of $-1$, indicating that the learning process has entered a repetitive pattern. This behaviour suggests that convergence is unlikely.
+
+\vspace{0.6cm}
+
+%-------------------------------------------------------------
+
+\noindent\textbf{12. XOR Gate - Update 30}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{xor30.png}
+\end{figure}
+
+\noindent
+The figure shows that the decision boundary has returned to a previously observed position instead of moving toward a stable solution. The weights again become approximately $[-1,0]$ while the bias changes to $0$. This repeated behaviour highlights the inability of a single-layer perceptron to separate XOR data.
+
+\vspace{0.6cm}
+
+%-------------------------------------------------------------
+
+\noindent\textbf{13. XOR Gate - Final Update}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{xor38.png}
+\end{figure}
+
+\noindent
+The final figure confirms that the perceptron does not converge, as the decision boundary repeats an earlier configuration instead of stabilizing. The algorithm terminates with weights approximately equal to $[-1,0]$ and a bias of $0$, while some samples remain misclassified. This demonstrates that the XOR gate is not linearly separable and cannot be learned using a single-layer perceptron.
+
+\vspace{0.8cm}
+
+%-------------------------------------------------------------
+
+\noindent\textbf{Overall Observation}
+
+\noindent
+The perceptron successfully learned the OR, NOT, and AND gates because each of these problems are linearly separable and it can be represented using  single decision boundary. As training progressed, the decision boundaries gradually shifted toward their optimal positions until convergence was achieved. In contrast, the XOR gate repeatedly changed its decision boundary without reaching a stable solution, demonstrating the limitation of a single-layer perceptron for non-linearly separable problems. This observation highlights the necessity of multilayer neural networks with hidden layers to solve complex classification tasks.
+\end{enumerate}
+
+%----------------------------------------------------------
+\section*{10. Conclusion}
+This experiment successfully implemented single layer perceptron from scratch for binary classification using the BankNote Authentiaction dataset.The dataset explores,preprocessed through feature normalisation,and it is divided into training and testing sets before model training.The perceptron effectively learned the decision boundary and achieved an accuracy of \textbf{98.55\%} with high precision, recall, and F1-score.The training error decreases over epochs,weights and bias converges to stable values,demonstrating successful learning.The comparision of learning rates shown similar classification performance due to the nearly linearly seperable nature of the dataset.Also the limitations of the perceptron such as XOR.overall the experiment provided a strong understanding of the perceptron learning,parameter updates,activation functions,model evaluation and the importance of the feature preprocessing in the machinelearning.
+
+\section*{11. References}
+
+\begin{enumerate}
+\item F. Rosenblatt, ``The Perceptron,'' \emph{Psychological Review}, 1958.
+\item I. Goodfellow, Y. Bengio and A. Courville, \emph{Deep Learning}, MIT Press, 2016.
+\item C. M. Bishop, \emph{Pattern Recognition and Machine Learning}, Springer, 2006.
+\item S. Haykin, \emph{Neural Networks and Learning Machines}, Pearson, 2009.
+\item UCI Machine Learning Repository -- Banknote Authentication Dataset.
+\item Scikit-learn Documentation: Perceptron.
+\end{enumerate}
+
+\end{document}
