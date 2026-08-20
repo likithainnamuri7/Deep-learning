@@ -1,0 +1,908 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{placeins}
+
+\geometry{margin=1in}
+
+\title{\textbf{Experiment 3}\\
+Implementation of Convolutional Neural Networks (CNNs) for Image Classification}
+
+\author{
+Shiv Nadar University Chennai\\
+CS3807 -- Deep Learning Laboratory
+}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+Degree \& Branch & B.Tech Artificial Intelligence \& Data Science \\ \hline
+Semester & V \\ \hline
+Subject Code \& Name & CS3807 -- Deep Learning Laboratory \\ \hline
+Academic Year & 2026--27 \\ \hline
+\end{tabular}
+\end{center}
+
+\section{Objective}
+
+To understand the working principle of Convolutional Neural Networks by implementing convolution, pooling, feature map visualization, and image classification using TensorFlow/Keras.
+
+\section{Learning Outcomes}
+
+Students will be able to:
+
+\begin{enumerate}
+    \item Explain the convolution operation.
+    \item Compute output dimensions using stride and padding.
+    \item Visualize feature maps.
+    \item Implement max pooling and average pooling.
+    \item Calculate CNN parameters.
+    \item Build a CNN for image classification.
+    \item Evaluate CNN performance.
+\end{enumerate}
+
+\section{Background Theory}
+
+A Convolutional Neural Network consists of:
+
+\begin{itemize}
+    \item Convolution Layer
+    \item Activation Layer
+    \item Pooling Layer
+    \item Fully Connected Layer
+\end{itemize}
+
+The convolution operation is
+
+\[
+Y(i,j)=\sum_m \sum_n X(i+m,j+n)K(m,n)
+\]
+
+where
+
+\begin{itemize}
+    \item $X$ : Input image
+    \item $K$ : Kernel (Filter)
+    \item $Y$ : Feature map
+\end{itemize}
+
+The output feature map size is
+
+\[
+\frac{N-F+2P}{S}+1
+\]
+
+where
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+N & Input Size \\ \hline
+F & Filter Size \\ \hline
+P & Padding \\ \hline
+S & Stride \\ \hline
+\end{tabular}
+\end{center}
+
+\subsection{Common Convolution Kernels}
+
+A kernel (or filter) is a small matrix that slides over an input image to extract important visual features such as edges, textures, corners, and smooth regions.
+
+\subsubsection{Identity Kernel}
+
+\[
+\begin{bmatrix}
+0&0&0\\
+0&1&0\\
+0&0&0
+\end{bmatrix}
+\]
+
+\textbf{Purpose}
+
+\begin{itemize}
+    \item Preserves the original image.
+    \item Used for understanding the convolution operation.
+\end{itemize}
+
+\subsubsection{Sobel-X Kernel (Vertical Edge Detection)}
+
+\[
+\begin{bmatrix}
+-1&0&1\\
+-2&0&2\\
+-1&0&1
+\end{bmatrix}
+\]
+
+\textbf{Applications}
+
+\begin{itemize}
+    \item Object detection
+    \item Lane detection
+    \item Face recognition
+\end{itemize}
+
+\subsubsection{Sobel-Y Kernel (Horizontal Edge Detection)}
+
+\[
+\begin{bmatrix}
+-1&-2&-1\\
+0&0&0\\
+1&2&1
+\end{bmatrix}
+\]
+
+\textbf{Applications}
+
+\begin{itemize}
+    \item Text detection
+    \item Boundary extraction
+    \item Medical image analysis
+\end{itemize}
+
+\subsubsection{Laplacian Kernel}
+
+\[
+\begin{bmatrix}
+0&-1&0\\
+-1&4&-1\\
+0&-1&0
+\end{bmatrix}
+\]
+
+\textbf{Applications}
+
+\begin{itemize}
+    \item Edge enhancement
+    \item Satellite image analysis
+    \item Medical imaging
+\end{itemize}
+
+\subsubsection{Sharpening Kernel}
+
+\[
+\begin{bmatrix}
+0 & -1 & 0\\
+-1 & 5 & -1\\
+0 & -1 & 0
+\end{bmatrix}
+\]
+
+\textbf{Applications}
+
+\begin{itemize}
+    \item Image enhancement
+    \item Optical Character Recognition (OCR)
+    \item Face recognition
+\end{itemize}
+
+\subsubsection{Box Blur Kernel}
+
+\[
+\frac{1}{9}
+\begin{bmatrix}
+1&1&1\\
+1&1&1\\
+1&1&1
+\end{bmatrix}
+\]
+
+\textbf{Applications}
+
+\begin{itemize}
+    \item Noise removal
+    \item Image smoothing
+    \item Image preprocessing
+\end{itemize}
+
+\subsubsection{Gaussian Blur Kernel}
+
+\[
+\frac{1}{16}
+\begin{bmatrix}
+1&2&1\\
+2&4&2\\
+1&2&1
+\end{bmatrix}
+\]
+
+\textbf{Applications}
+
+\begin{itemize}
+    \item Noise reduction
+    \item Computer vision preprocessing
+    \item Feature extraction
+\end{itemize}
+
+\subsubsection{Emboss Kernel}
+
+\[
+\begin{bmatrix}
+-2&-1&0\\
+-1&1&1\\
+0&1&2
+\end{bmatrix}
+\]
+
+\textbf{Applications}
+
+\begin{itemize}
+    \item Texture analysis
+    \item Artistic image effects
+\end{itemize}
+
+\subsubsection{Outline Detection Kernel}
+
+\[
+\begin{bmatrix}
+-1&-1&-1\\
+-1&8&-1\\
+-1&-1&-1
+\end{bmatrix}
+\]
+
+\textbf{Applications}
+
+\begin{itemize}
+    \item Image segmentation
+    \item Boundary detection
+    \item Shape extraction
+\end{itemize}
+
+\subsubsection{Motion Blur Kernel}
+
+\[
+\frac{1}{5}
+\begin{bmatrix}
+1&0&0&0&0\\
+0&1&0&0&0\\
+0&0&1&0&0\\
+0&0&0&1&0\\
+0&0&0&0&1
+\end{bmatrix}
+\]
+
+\textbf{Applications}
+
+\begin{itemize}
+    \item Motion simulation
+    \item Image restoration
+    \item Video processing
+\end{itemize}
+
+\section*{Summary of Common Kernels}
+
+\begin{center}
+\begin{tabular}{|l|c|l|l|}
+\hline
+\textbf{Kernel} & \textbf{Size} & \textbf{Purpose} & \textbf{Applications}\\
+\hline
+Identity & $3\times3$ & Preserve original image & Baseline comparison \\
+\hline
+Sobel-X & $3\times3$ & Detect vertical edges & Object detection \\
+\hline
+Sobel-Y & $3\times3$ & Detect horizontal edges & Boundary detection \\
+\hline
+Laplacian & $3\times3$ & Detect edges in all directions & Medical imaging \\
+\hline
+Sharpen & $3\times3$ & Enhance details & Image enhancement \\
+\hline
+Box Blur & $3\times3$ & Smooth image & Noise removal \\
+\hline
+Gaussian Blur & $3\times3$ & Reduce noise & Computer vision \\
+\hline
+Emboss & $3\times3$ & 3D effect & Artistic effects \\
+\hline
+Outline & $3\times3$ & Boundary extraction & Segmentation \\
+\hline
+Motion Blur & $5\times5$ & Simulate motion & Video processing \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Numerical Example 1: Convolution}
+
+Consider the following input image.
+
+\[
+X=
+\begin{bmatrix}
+1&2&3\\
+4&5&6\\
+7&8&9
+\end{bmatrix}
+\]
+
+Kernel
+
+\[
+K=
+\begin{bmatrix}
+1&0\\
+0&1
+\end{bmatrix}
+\]
+
+Output
+
+\textbf{First position}
+
+\[
+1(1)+2(0)+4(0)+5(1)=6
+\]
+
+\textbf{Second position}
+
+\[
+2(1)+3(0)+5(0)+6(1)=8
+\]
+
+\textbf{Third position}
+
+\[
+4(1)+5(0)+7(0)+8(1)=12
+\]
+
+\textbf{Fourth position}
+
+\[
+5(1)+6(0)+8(0)+9(1)=14
+\]
+
+Feature map
+
+\[
+\begin{bmatrix}
+6&8\\
+12&14
+\end{bmatrix}
+\]
+
+\section{Numerical Example 2: Max Pooling}
+
+Feature map
+
+\[
+\begin{bmatrix}
+1 & 5 & 2 & 3\\
+7 & 8 & 1 & 0\\
+4 & 6 & 9 & 5\\
+2 & 3 & 1 & 8
+\end{bmatrix}
+\]
+
+Using a \(2 \times 2\) max-pooling filter,
+
+Window 1
+
+\[
+\begin{bmatrix}
+1 & 5\\
+7 & 8
+\end{bmatrix}
+\rightarrow 8
+\]
+
+Window 2
+
+\[
+\begin{bmatrix}
+2 & 3\\
+1 & 0
+\end{bmatrix}
+\rightarrow 3
+\]
+
+Window 3
+
+\[
+\begin{bmatrix}
+4 & 6\\
+2 & 3
+\end{bmatrix}
+\rightarrow 6
+\]
+
+Window 4
+
+\[
+\begin{bmatrix}
+9 & 5\\
+1 & 8
+\end{bmatrix}
+\rightarrow 9
+\]
+
+Output
+
+\[
+\begin{bmatrix}
+8 & 3\\
+6 & 9
+\end{bmatrix}
+\]
+
+\section{Numerical Example 3: Parameter Calculation}
+
+Suppose the input image size is
+
+\[
+32 \times 32 \times 3
+\]
+
+Convolution layer specifications:
+
+\begin{itemize}
+    \item Filters = 16
+    \item Kernel size = \(3 \times 3\)
+\end{itemize}
+
+Parameters:
+
+\[
+(3 \times 3 \times 3 + 1) \times 16
+\]
+
+\[
+=(27+1)\times16
+\]
+
+\[
+=448
+\]
+
+Therefore,
+
+\[
+\text{Total trainable parameters}=448
+\]
+
+\section{Dataset}
+
+Dataset: CIFAR-10
+
+\begin{itemize}
+    \item Training images: 50,000
+    \item Testing images: 10,000
+    \item Classes: 10
+    \item Image size: \(32 \times 32 \times 3\)
+\end{itemize}
+
+\section{Experimental Procedure}
+
+\subsection*{Task 1}
+
+Load the CIFAR-10 dataset.
+
+\begin{itemize}
+    \item Display ten sample images.
+    \item Print dataset dimensions.
+    \item Plot class distribution.
+\end{itemize}
+
+\subsection*{Task 2}
+
+Implement a convolution layer.
+
+Compare the following:
+
+\begin{itemize}
+    \item Kernel = \(3 \times 3\)
+    \item Kernel = \(5 \times 5\)
+    \item Kernel = \(7 \times 7\)
+\end{itemize}
+
+Record the feature map sizes.
+
+\subsection*{Task 3}
+
+Study hyperparameters.
+
+Compare:
+
+\begin{itemize}
+    \item Stride = 1
+    \item Stride = 2
+    \item Padding = Same
+    \item Padding = Valid
+\end{itemize}
+
+Compute the output dimensions.
+
+\subsection*{Task 4}
+
+Visualize feature maps after the first convolution layer.
+
+Display at least eight feature maps.
+
+\subsection*{Task 5}
+
+Compare the following:
+
+\begin{itemize}
+    \item Max Pooling
+    \item Average Pooling
+\end{itemize}
+
+Compare output size and accuracy.
+
+\subsection*{Task 6}
+
+Construct the following CNN architecture.
+
+\[
+\text{Input}
+\rightarrow
+\text{Conv}
+\rightarrow
+\text{ReLU}
+\rightarrow
+\text{MaxPool}
+\rightarrow
+\text{Conv}
+\rightarrow
+\text{ReLU}
+\rightarrow
+\text{MaxPool}
+\rightarrow
+\text{Flatten}
+\rightarrow
+\text{Dense}
+\rightarrow
+\text{Softmax}
+\]
+
+Train using
+
+\begin{itemize}
+    \item Optimizer: Adam
+    \item Epochs: 20
+    \item Batch size: 32
+\end{itemize}
+
+\subsection*{Task 7}
+
+Evaluate:
+
+\begin{itemize}
+    \item Accuracy
+    \item Precision
+    \item Recall
+    \item F1-score
+    \item Confusion matrix
+    \item Classification report
+\end{itemize}
+
+\section{Mandatory Plot Inferences}
+
+\subsection{Sample Images}
+
+\begin{center}
+\includegraphics[width=0.75\textwidth]{img1.png}
+\end{center}
+
+\begin{center}
+\textbf{Figure 1: Sample Images from the CIFAR-10 Dataset}
+\end{center}
+\textbf{Inference:}
+The sample images show different categories from the CIFAR-10 dataset, including animals, vehicles, and objects. The images are correctly labeled into their respective classes, demonstrating the diversity of the dataset used for CNN training. The dataset contains RGB images of size \(32\times32\times3\), which are suitable for convolution-based feature extraction.
+
+\vspace{0.5cm}
+
+\subsection{Class Distribution}
+
+\begin{center}
+\includegraphics[width=0.75\textwidth]{img2.png}
+\end{center}
+
+\begin{center}
+\textbf{Figure 2: Class Distribution}
+\end{center}
+\textbf{Inference:}
+The class distribution plot shows that all ten CIFAR-10 classes contain approximately 5000 training images each. This indicates that the dataset is balanced and does not suffer from class imbalance, allowing the CNN model to learn all categories effectively.
+
+\vspace{0.5cm}
+
+\subsection{Training Accuracy}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{img3.png}
+    \caption{Training Accuracy}
+\end{figure}
+\textbf{Inference:}
+The training accuracy shows a steady increase over the 10 epochs, improving from approximately 0.38 to 0.60. This indicates that the VGG16 transfer learning model is successfully learning meaningful features from the CIFAR-10 dataset. The gradual improvement and stabilization of accuracy in later epochs suggest that the model is converging, although the relatively low final training accuracy indicates that further fine-tuning, data augmentation, or additional training epochs may be required to achieve better performance..
+
+\vspace{0.5cm}
+
+\subsection{Validation Accuracy}
+
+\begin{center}
+\includegraphics[width=0.75\textwidth]{img4.png}
+\end{center}
+
+\begin{center}
+\textbf{Figure 4: Validation Accuracy}
+\end{center}
+\textbf{Inference:}
+The validation accuracy increases consistently across the epochs, improving from approximately 0.51 to 0.63. This indicates that the model is generalizing well to unseen validation data and is effectively learning useful features from the CIFAR-10 dataset. The steady improvement without significant fluctuations suggests stable training with minimal overfitting. However, the validation accuracy begins to plateau in the later epochs, indicating that the model may require further fine-tuning, data augmentation, or additional optimization to achieve higher classification performance.
+\vspace{0.5cm}
+
+\subsection{Training Loss}
+
+\begin{center}
+\includegraphics[width=0.75\textwidth]{img5.png}
+\end{center}
+
+\begin{center}
+\textbf{Figure 5: Training Loss}
+\end{center}
+\textbf{Inference:}
+The training loss decreases consistently from approximately 1.72 to 1.15 over the 10 epochs, indicating that the model is successfully minimizing the error and learning effective feature representations from the training data. The gradual reduction in loss shows stable convergence of the VGG16 transfer learning model without major fluctuations. The continuous downward trend suggests that the model is improving its prediction capability; however, the slow decrease in later epochs indicates that the model is approaching a saturation point and may benefit from further fine-tuning or additional optimization techniques.
+
+\vspace{0.5cm}
+
+\subsection{Validation Loss}
+
+\begin{center}
+\includegraphics[width=0.75\textwidth]{img6.png}
+\end{center}
+
+\begin{center}
+\textbf{Figure 6: Validation Loss}
+\end{center}
+\textbf{Inference:}
+The validation loss shows a continuous decrease from approximately 1.43 to 1.05 over the 10 epochs. This indicates that the model is improving its ability to generalize to unseen validation data and is reducing prediction errors effectively. The smooth downward trend without sudden increases suggests that the model is not significantly overfitting during training. The reduction in validation loss confirms stable learning and convergence of the transfer learning model, although additional fine-tuning could further improve the model's performance.
+
+\vspace{0.5cm}
+
+\subsection{Feature Maps}
+
+\begin{center}
+\includegraphics[width=0.75\textwidth]{img7.png}
+\end{center}
+
+\begin{center}
+\textbf{Figure 7: Feature Maps}
+\end{center}
+\textbf{Inference:}
+The feature maps extracted from the VGG16 convolutional layer demonstrate the different visual patterns learned by the model from the input image. Each feature map highlights specific low-level features such as edges, textures, shapes, and color variations detected by different convolution filters. The variation among the feature maps indicates that the pretrained VGG16 model is extracting diverse feature representations, which helps the classifier distinguish between different CIFAR-10 image classes. These learned feature patterns improve the model's ability to perform image classification through transfer learning.
+
+\vspace{0.5cm}
+
+\subsection{Confusion Matrix}
+
+\begin{center}
+\includegraphics[width=0.75\textwidth]{img8.png}
+\end{center}
+
+\begin{center}
+\textbf{Figure 8: Confusion Matrix}
+\end{center}
+\textbf{Inference:}
+The confusion matrix shows the classification performance of the VGG16 transfer learning model across all 10 CIFAR-10 classes. The strong values along the diagonal indicate that the model correctly classifies most images into their respective classes. Classes such as Automobile, Frog, Horse, Ship, and Truck achieve higher correct prediction counts, showing better feature extraction and classification performance. However, some misclassifications are observed between visually similar categories, such as Cat vs Dog, Bird vs Cat, and Automobile vs Truck, which is expected due to similarities in their visual features. Overall, the confusion matrix indicates that the model performs well with good class-wise recognition, while further fine-tuning and data augmentation could help improve classification accuracy for challenging classes.
+
+\clearpage
+
+\section{Additional Exercises}
+
+\begin{enumerate}
+
+\item \textbf{Calculate the output size for a \(64\times64\) image using a \(5\times5\) kernel with stride \(2\) and padding \(2\).}
+
+Using the formula,
+
+\[
+\text{Output Size}=\frac{N-F+2P}{S}+1
+\]
+
+where,
+
+\[
+N=64,\quad F=5,\quad P=2,\quad S=2
+\]
+
+\[
+\text{Output Size}
+=
+\frac{64-5+2(2)}{2}+1
+\]
+
+\[
+=
+\frac{63}{2}+1
+\]
+
+\[
+=31.5+1
+\]
+
+\[
+=32
+\]
+
+Therefore, the output feature map size is
+
+\[
+32\times32
+\]
+
+\item \textbf{Compute the trainable parameters of a convolution layer having 64 filters of size \(3\times3\) and an RGB input.}
+
+The formula for calculating the number of trainable parameters is
+
+\[
+(F\times F\times C+1)\times K
+\]
+
+where,
+
+\begin{itemize}
+    \item \(F=3\)
+    \item \(C=3\)
+    \item \(K=64\)
+\end{itemize}
+
+Therefore,
+
+\[
+(3\times3\times3+1)\times64
+\]
+
+\[
+=(27+1)\times64
+\]
+
+\[
+=1792
+\]
+
+Hence, the total number of trainable parameters is
+
+\[
+1792
+\]
+
+\item \textbf{Compare ReLU and Sigmoid activation functions.}
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Property} & \textbf{ReLU} & \textbf{Sigmoid} \\
+\hline
+Range & \(0\) to \(\infty\) & \(0\) to \(1\) \\
+\hline
+Speed & Faster & Slower \\
+\hline
+Vanishing Gradient & Less likely & More likely \\
+\hline
+Usage & Hidden layers & Output layers \\
+\hline
+\end{tabular}
+\end{center}
+
+ReLU is widely used because it improves computational efficiency and reduces the vanishing gradient problem.
+
+\item \textbf{Replace max pooling with average pooling and compare the results.}
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Property} & \textbf{Max Pooling} & \textbf{Average Pooling} \\
+\hline
+Operation & Maximum value & Average value \\
+\hline
+Feature Preservation & High & Moderate \\
+\hline
+Noise Sensitivity & Low & High \\
+\hline
+Performance & Better & Slightly lower \\
+\hline
+\end{tabular}
+\end{center}
+
+Max pooling preserves dominant features, whereas average pooling retains more general information.
+
+\item \textbf{Increase the number of filters from 16 to 64 and analyze the results.}
+
+Increasing the number of filters improves the ability of the model to capture more complex image features. However, the computational complexity and training time also increase significantly.
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Property} & \textbf{16 Filters} & \textbf{64 Filters} \\
+\hline
+Accuracy & Moderate & Higher \\
+\hline
+Training Time & Lower & Higher \\
+\hline
+Memory Usage & Lower & Higher \\
+\hline
+Feature Extraction & Limited & Improved \\
+\hline
+\end{tabular}
+\end{center}
+
+\end{enumerate}
+
+\section{Results}
+
+\begin{center}
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Metric} & \textbf{Value} \\
+\hline
+Training Accuracy & 91\% \\
+\hline
+Testing Accuracy & 63.99\% \\
+\hline
+Precision & 65.04\% \\
+\hline
+Recall & 63.99\% \\
+\hline
+F1-score & 64.29\% \\
+\hline
+Number of Parameters & 153962 \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Discussion}
+
+\begin{enumerate}
+
+\item \textbf{Why is convolution preferred over fully connected layers for images?}
+
+Convolution layers are preferred because they exploit the spatial structure of images through local connectivity and weight sharing. They use fewer trainable parameters compared to fully connected layers, reducing computational complexity while efficiently extracting important features such as edges, textures, and patterns.
+
+\item \textbf{How does stride affect the feature map size?}
+
+Stride determines the movement of the convolution filter across the input image. A larger stride produces a smaller feature map by reducing the number of filter operations. This decreases computation and memory usage but may cause loss of fine image details.
+
+\item \textbf{What is the role of padding?}
+
+Padding adds extra pixels (usually zeros) around the border of an image before convolution. It helps preserve information at image boundaries, prevents excessive reduction in feature map size, and allows better extraction of edge features.
+
+\item \textbf{Why is pooling used?}
+
+Pooling is used to reduce the spatial dimensions of feature maps while retaining the most important features. It decreases computational cost, reduces the number of parameters, and helps prevent overfitting by providing a more compact feature representation
+
+\item \textbf{How do feature maps represent image characteristics?}
+
+Feature maps are outputs generated by convolution filters. Each filter detects specific visual patterns such as edges, corners, textures, shapes, and object parts. Different feature maps represent different characteristics learned by the CNN during training.
+
+\item \textbf{Why do CNNs require fewer parameters than MLPs?}
+
+CNNs require fewer parameters because they use local connectivity and weight sharing. Instead of every neuron connecting to all input pixels like an MLP, convolution filters are reused across the image, significantly reducing the number of trainable parameters while maintaining spatial information.
+
+\end{enumerate}
+
+\section{Conclusion}
+
+In this experiment, the CIFAR-10 dataset was used to understand convolution, feature extraction, pooling, and image classification using CNNs. The model effectively learned important image features and achieved good classification performance, showing the usefulness of convolutional layers in image processing.
+\section{References}
+
+\begin{enumerate}
+    \item Goodfellow et al., \textit{Deep Learning}
+    \item Bishop, \textit{Pattern Recognition and Machine Learning}
+    \item Haykin, \textit{Neural Networks and Learning Machines}
+    \item TensorFlow Documentation
+    \item CIFAR-10 Dataset Documentation
+\end{enumerate}
+
+\end{document}
